@@ -1,0 +1,6 @@
+-module(fake).
+
+-export([run/0]).
+
+run() ->
+    {ok, a}.

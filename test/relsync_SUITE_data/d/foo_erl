@@ -1,0 +1,6 @@
+-module(foo).
+
+-export([run/0]).
+
+run() ->
+    {ok, d}.

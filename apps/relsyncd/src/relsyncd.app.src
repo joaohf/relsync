@@ -1,0 +1,16 @@
+{application, relsyncd, [
+    {description, "SSH subsystem for helping synchronize a release on a remote node"},
+    {vsn, "0.1.0"},
+    {registered, []},
+    {mod, {relsyncd_app, []}},
+    {applications, [
+        kernel,
+        stdlib,
+        ssh,
+        relsync_lib
+    ]},
+    {env, []},
+    {modules, []},
+    {licenses, ["Apache-2.0"]},
+    {links, [{"GitHub", "https://github.com/joaohf/relsync"}]}
+]}.

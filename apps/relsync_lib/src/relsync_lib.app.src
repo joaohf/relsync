@@ -1,0 +1,14 @@
+{application, relsync_lib, [
+    {description, "Internal library for relsync and relsyncd"},
+    {vsn, "0.1.0"},
+    {registered, []},
+    {applications, [
+        kernel,
+        stdlib,
+        asn1
+    ]},
+    {env, []},
+    {modules, []},
+    {licenses, ["Apache-2.0"]},
+    {links, [{"GitHub", "https://github.com/joaohf/relsync"}]}
+]}.

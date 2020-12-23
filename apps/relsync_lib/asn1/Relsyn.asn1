@@ -1,0 +1,102 @@
+Relsyn DEFINITIONS AUTOMATIC TAGS ::=
+BEGIN
+  RelsynMessage ::= CHOICE {
+    request CHOICE {
+      syncRequest SyncRequest,
+      fileListRequest FileListRequest,
+      reloadRequest ReloadRequest,
+      setHookRequest SetHookRequest,
+      clearHookRequest ClearHookRequest
+    },
+    response CHOICE {
+      syncResponse SyncResponse,
+      reloadResponse ReloadResponse,
+      fileListResponseEntry FileListEntry,
+      fileListResponseDone FileListResponseDone,
+      setHookResponse SetHookResponse,
+      clearHookResponse ClearHookResponse
+    }
+  }
+
+  RelsyncResult ::= SEQUENCE {
+    resultCode ENUMERATED {
+      ok      (0),
+      error   (1)
+    }
+  }
+
+  SyncRequest ::= SEQUENCE {
+    operation ENUMERATED {
+      pre (0),
+      update(1),
+      post (2)
+    }
+  }
+
+  ClearHookRequest ::= SEQUENCE {
+  }
+
+  ClearHookResponse ::= RelsyncResult
+
+  SetHookRequest ::= SEQUENCE {
+    module OCTET STRING,
+    bin OCTET STRING,
+    file OCTET STRING
+  }
+
+  SetHookResponse ::= RelsyncResult
+
+  SyncResponse ::= RelsyncResult
+
+  ReloadResponse ::= SEQUENCE {
+    paths ReloadListEntry
+  }
+
+  ReloadListEntry ::= SEQUENCE OF
+    ReloadEntry
+
+  ReloadEntry ::= SEQUENCE {
+    path FilePathString,
+    status ENUMERATED {
+      skipped (0),
+      notloaded (1),
+      sticky (2),
+      ok (3)
+    }
+  }
+
+  ReloadRequest ::= SEQUENCE {
+    paths PathList
+  }
+
+  FileListRequest ::= SEQUENCE {
+    absoluteDirectoryPath AbsoluteDirectoryPath
+  }
+
+  FileListResponseDone ::= RelsyncResult
+
+  FileListEntry ::= SEQUENCE {
+    files FileList
+  }
+
+  PathList ::= SEQUENCE OF
+   FilePathString
+ 
+  FileList ::= SEQUENCE OF
+   fileAttribute FileAttribute
+
+  FileAttribute ::= SEQUENCE {
+    file FilePathString,
+    fileInfo FileInfo
+  }
+
+  FileInfo ::= SEQUENCE {
+    mode INTEGER,
+    hash Hash
+  }
+
+  Hash ::= OCTET STRING
+  FilePathString ::= OCTET STRING
+  AbsoluteDirectoryPath ::= OCTET STRING
+
+END

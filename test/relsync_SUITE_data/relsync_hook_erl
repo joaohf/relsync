@@ -1,0 +1,10 @@
+-module(relsync_hook).
+
+-export([presync/0, postsync/0]).
+
+
+presync() ->
+    ok.
+
+postsync() ->
+    ok.
