@@ -106,10 +106,11 @@ close(ConRef) ->
     ok = ssh:close(ConRef).
 
 start_link(ConRef) ->
+    Dbg = false,
     {ok, ChRelsyncd} = ssh_connection:session_channel(ConRef, infinity),
     {ok, ChSftp} = ssh_sftp:start_channel(ConRef),
 
-    ssh_client_channel:start_link(ConRef, ChRelsyncd, ?MODULE, [ConRef, ChRelsyncd, ChSftp]).
+    ssh_client_channel:start_link(ConRef, ChRelsyncd, ?MODULE, [ConRef, ChRelsyncd, ChSftp, Dbg]).
 
 start(ConRef) ->
     {ok, ChRelsyncd} = ssh_connection:session_channel(ConRef, infinity),
@@ -148,14 +149,14 @@ set_hooks(ChRef, ModuleName) ->
 stop(ChRef) ->
     ssh_client_channel:call(ChRef, stop).
 
-init([CM, ChRelsyncd, ChSftp]) ->
+init([CM, ChRelsyncd, ChSftp, Dbg]) ->
     case ssh_connection:subsystem(CM, ChRelsyncd, "relsync", infinity) of
         success ->
             State = #state{
                 cm = CM,
                 ch_relsyncd = ChRelsyncd,
                 ch_sftp = ChSftp,
-                dbg = false
+                dbg = Dbg
             },
             ?DBG(State, "callback spawned", []),
             {ok, State};

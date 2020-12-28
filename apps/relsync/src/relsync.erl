@@ -45,7 +45,7 @@ init(State) ->
 
 %% Use the command line parameters to setup the local
 %% Erlang instance to be able to talk to remote nodes.
--spec setup_local_node(config()) -> ok | {error, set_cookie} | {error, net_kernel, term()} .
+-spec setup_local_node(config()) -> ok | {error, set_cookie} | {error, net_kernel, term()}.
 setup_local_node(Config) ->
     % First, make sure that Epmd is running
     case net_adm:names() of
@@ -224,7 +224,9 @@ safe_file({Filename, _Info}) ->
 % Synchronize the nodes by taking the local and remote file
 % lists, filtering and sorting them, and then comparing them
 % one by one to make sure that both sides are in sync.
--spec synchronize_node(Node, LocalPath, LocalFileInfos, DestPath, DestFileInfos) -> {ok, list()} when
+-spec synchronize_node(Node, LocalPath, LocalFileInfos, DestPath, DestFileInfos) ->
+    {ok, list()}
+when
     Node :: {module(), pid() | atom()},
     LocalPath :: string(),
     LocalFileInfos :: [{string(), {integer(), binary()}}],

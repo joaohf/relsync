@@ -21,7 +21,8 @@
 
 -include("relsync.hrl").
 
--type parsed() :: {ssh, list()} | {erl, list()} | help | version | {error, string()}.
+-type parsed() ::
+    {undefined, config()} | {ssh, config()} | {erl, config()} | help | version | {error, string()}.
 
 -spec opts() -> [getopt:option_spec()].
 opts() ->
@@ -204,5 +205,5 @@ resolve_localpath(L, _) -> L.
 resolve_hooks(undefined, H) -> H;
 resolve_hooks(H, _) -> H.
 
-resolve_exclude_system_libs(undefined, E) -> E;
+resolve_exclude_system_libs(true, E) -> E;
 resolve_exclude_system_libs(E, _) -> E.
