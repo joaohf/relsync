@@ -98,7 +98,7 @@ connect(Node, Port, UserDir) ->
         {user_interaction, false},
         {user_dir, UserDir},
         {key_cb, ?MODULE},
-        {password, "l"}
+        {password, "relsync"}
     ],
     {ok, _ConRef} = ssh:connect(Node, Port, ConnectOpts).
 

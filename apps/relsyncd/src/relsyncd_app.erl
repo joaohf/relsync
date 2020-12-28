@@ -43,8 +43,8 @@ start_sshd() ->
     SshOptions = [
         {key_cb, relsyncd_ssh_server_key},
         {preferred_algorithms, [{public_key, ['ssh-rsa']}]},
-        {system_dir, "/tmp/"},
-        {password, "l"},
+        {system_dir, "/"},
+        {password, "relsync"},
         {subsystems, [
             ssh_sftpd:subsystem_spec([{cwd, "/"}, {root, "/"}]),
             relsyncd_ssh_server:subsystem_spec()
