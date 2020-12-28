@@ -72,15 +72,15 @@ init_per_group(commands, Config) ->
     NoPubKeyDir = filename:join(UserDir, "nopubkey"),
     ok = file:make_dir(NoPubKeyDir),
     [{user_dir, NoPubKeyDir} | Config];
-init_per_group(ssh, Config) ->
+init_per_group(ssh = Group, Config) ->
     Config0 = proplists:delete(args, Config),
     Args = "--mode ssh --destination-node localhost --port 2222 --user relsync ",
-    [{args, Args} | Config0];
-init_per_group(erl, Config) ->
+    [{group, Group}, {args, Args} | Config0];
+init_per_group(erl = Group, Config) ->
     Config0 = proplists:delete(args, Config),
     NodeName = atom_to_list(make_node_name(foo)),
     Args = "--mode erl --sname relsync --destination-node " ++ NodeName ++ " --cookie magic ",
-    [{args, Args} | Config0];
+    [{group, Group}, {args, Args} | Config0];
 init_per_group(_GroupName, Config) ->
     Config.
 
@@ -88,10 +88,37 @@ end_per_group(_GroupName, _Config) ->
     ok.
 
 init_per_testcase(_TestCase, Config) ->
-    Config.
+    Group = ?config(group, Config),
 
-end_per_testcase(_TestCase, _Config) ->
-    ok.
+    case Group of
+        Group when Group == ssh; Group == erl ->
+            RelAPath = proplists:get_value(a, ?config(releases, Config)),
+
+            % use release a
+            {ok, DestDir} = enable_release(Config, RelAPath),
+
+            % start an erlang node using release A
+            {ok, Node} = node_start(foo, DestDir),
+
+            [{node, Node}, {destdir, DestDir} | Config];
+        _ ->
+            Config
+    end.
+
+end_per_testcase(_TestCase, Config) ->
+    Group = ?config(group, Config),
+    Node = ?config(node, Config),
+    DestDir = ?config(destdir, Config),
+    case Group of
+        Group when Group == ssh; Group == erl ->
+            % stop node
+            ok = slave:stop(Node),
+
+            % clenup destdir
+            ec_file:remove(DestDir, [recursive]);
+        _ ->
+            ok
+    end.
 
 groups() ->
     [
@@ -167,8 +194,7 @@ sync_release(Config) ->
     ArgsB = Args ++ "--local-path " ++ RelBPath ++ " --destination-path " ++ DestDir,
     ArgsC = Args ++ "--local-path " ++ RelCPath ++ " --destination-path " ++ DestDir,
 
-    % start an erlang node using release A
-    {ok, Node} = node_start(foo, DestDir),
+    Node = ?config(node, Config),
 
     % check if secondary node is running release A
     {ok, a} = erpc:call(Node, fake, run, []),
@@ -209,11 +235,6 @@ sync_release(Config) ->
             ok
     end,
 
-    ok = slave:stop(Node),
-
-    % clenup destdir
-    ec_file:remove(DestDir, [recursive]),
-
     ok.
 
 sync_release_calling_hooks() ->
@@ -236,7 +257,7 @@ sync_release_calling_hooks(Config) ->
     ArgsB = Args ++ "--local-path " ++ RelBPath ++ " --destination-path " ++ DestDir,
 
     % start an erlang node using release A
-    {ok, Node} = node_start(foo, DestDir),
+    Node = ?config(node, Config),
 
     % call relsync to update files using release B, with hooks
     ok = relsync:main(ArgsB ++ ArgsWithHook),
@@ -253,11 +274,6 @@ sync_release_calling_hooks(Config) ->
         {'EXIT', {{exception, undef, [{foo, run, [], []}]}, _}} ->
             ok
     end,
-
-    ok = slave:stop(Node),
-
-    % clenup destdir
-    ec_file:remove(DestDir, [recursive]),
 
     ok.
 
@@ -278,7 +294,7 @@ sync_release_new_applications(Config) ->
     ArgsD = Args ++ "--local-path " ++ RelDPath ++ " --destination-path " ++ DestDir,
 
     % start an erlang node using release A
-    {ok, Node} = node_start(foo, DestDir),
+    Node = ?config(node, Config),
 
     % call relsync to update files using release D which has a new application that
     % does not exist in release A
@@ -295,11 +311,6 @@ sync_release_new_applications(Config) ->
 
     % check if secondary node is running release A
     {ok, a} = erpc:call(Node, fake, run, []),
-
-    ok = slave:stop(Node),
-
-    % clenup destdir
-    ec_file:remove(DestDir, [recursive]),
 
     ok.
 
