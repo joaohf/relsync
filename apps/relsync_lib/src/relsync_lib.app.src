@@ -1,6 +1,6 @@
 {application, relsync_lib, [
     {description, "Internal library for relsync and relsyncd"},
-    {vsn, "0.1.0"},
+    {vsn, "0.1.1"},
     {registered, []},
     {applications, [
         kernel,

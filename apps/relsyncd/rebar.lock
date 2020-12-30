@@ -1,6 +1,6 @@
 {"1.1.0",
-[{<<"relsync_lib">>,{pkg,<<"relsync_lib">>,<<"0.1.0">>},0}]}.
+[{<<"relsync_lib">>,{pkg,<<"relsync_lib">>,<<"0.1.1">>},0}]}.
 [
 {pkg_hash,[
- {<<"relsync_lib">>, <<"58E5374FDE38FB9B01EC84C119E845004FBDABCFB35FA405E45FC495414E3653">>}]}
+ {<<"relsync_lib">>, <<"E66FCDC19D4476BB0E318C5A390030D465D4ADF83152650E63DF061726987317">>}]}
 ].
